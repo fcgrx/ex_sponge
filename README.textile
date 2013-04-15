@@ -1,6 +1,6 @@
 h1. ExSponge
 
-An HTML / WYSIWYG cleanup plugin for "ExpressionEngine":http://www.expressionengine.com v2
+An HTML / WYSIWYG / Rich Text editor cleanup plugin for "ExpressionEngine":http://www.expressionengine.com v2
 
 h2. Info
 
