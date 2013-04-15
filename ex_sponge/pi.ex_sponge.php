@@ -6,7 +6,7 @@ Copyright (C) 2013 FCGRX.
 
 $plugin_info = array(
 						'pi_name'			=> 'ExSponge',
-						'pi_version'		=> '0.8.3',
+						'pi_version'		=> '0.8.4',
 						'pi_author'			=> 'Dan Prothero',
 						'pi_author_url'		=> 'http://fcgrx.com/',
 						'pi_description'	=> 'Cleans up the garbage that text editors and word processors leave behind',
