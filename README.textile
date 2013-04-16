@@ -63,8 +63,9 @@ bc. {exp:ex_sponge allow_breaks="yes" convert_tags="no" allow_tags="<p><strong><
 {/exp:ex_sponge}
 
 h2. License
+
 Licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License
-"http://creativecommons.org/licenses/by-sa/3.0/us/":http://creativecommons.org/licenses/by-sa/3.0/us/
+http://creativecommons.org/licenses/by-sa/3.0/us/
 
 h2. Contact
 
