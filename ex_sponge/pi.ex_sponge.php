@@ -118,7 +118,7 @@ class Ex_sponge {
 			// could not find a one-pass pattern to eliminate all disallowed attributes;
 			// instead, we repeat a pattern until no disallowed attributes are found
 			// TO DO: BETTER SOLUTION?
-			$count = substr_count($allow_attributes,'|'); $matches = 1;
+			$count = substr_count($allow_attributes,'|') + 1; $matches = 1;
 			while ($count-- && ($matches > 0))
 			{
 				$str = preg_replace("#(<\w+\b[^>]*)(?:\b\w*(?<!$allow_attributes)=(?:\"[^\"]*\"|'[^']*')\s*)+([^>]*/?>)#imU", "$1$2", $str, -1, $matches);
