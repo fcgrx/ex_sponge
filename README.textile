@@ -43,7 +43,7 @@ _All parameters are optional:_
 
 |_. Parameter |_. Description |_. Default |
 | *allow_breaks* | Allow @<br>@ tags to remain ("yes"), or consolidate them into paragraphs ("no"). | "no" |
-| *allow_parameters* | Allow tag parameters to remain ("yes"), strip all but the most necessary ("no", which is the equivalent of <notextile>"alt|href|src|title"</notextile>), or strip all parameters except the ones you list. | "no" |
+| *allow_parameters* | Allow tag parameters to remain ("yes"), strip all but the most necessary ("no", which is the equivalent of "alt&#124;href&#124;src&#124;title", or strip all parameters except the ones you list. | "no" |
 | *allow_styles* | Allow class and style parameters to remain ("yes"). | "no" |
 | *allow_tags* | Strip all HTML tags from the text ("no"), strip most tags but keep the most useful and safe ("safe", which is the equivalent of "&lt;a&gt;&lt;i&gt;&lt;em&gt;&lt;strong&gt;&lt;cite&gt;&lt;code&gt;&lt;ul&gt;&lt;ol&gt;&lt;li&gt;&lt;dl&gt;&lt;dt&gt;&lt;dd&gt;&lt;img&gt;&lt;h1&gt;&lt;h2&gt;&lt;h3&gt;&lt;h4&gt;&lt;h5&gt;&lt;h6&gt;&lt;br&gt;&lt;p&gt;&lt;b&gt;&lt;blockquote&gt;"), or strip all tags except the ones you list. | "safe" |
 | *convert_tags* | Convert presentational tags @<i>@ and @<b>@ to the semantic @<em>@ and @<strong>@ ("yes"), or leave them as-is ("no"). | "yes" |
