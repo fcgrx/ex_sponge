@@ -6,7 +6,7 @@ Copyright (C) 2013 FCGRX.
 
 $plugin_info = array(
 						'pi_name'			=> 'ExSponge',
-						'pi_version'		=> '0.8.5',
+						'pi_version'		=> '0.8.6',
 						'pi_author'			=> 'Dan Prothero',
 						'pi_author_url'		=> 'http://fcgrx.com/',
 						'pi_description'	=> 'Cleans up the garbage that text editors and word processors leave behind',
@@ -38,87 +38,51 @@ class Ex_sponge {
 		$allow_tags = ( ! $this->EE->TMPL->fetch_param('allow_tags')) ? 'safe' :  $this->EE->TMPL->fetch_param('allow_tags');
 		$allow_breaks = ( ! $this->EE->TMPL->fetch_param('allow_breaks')) ? 'no' :  $this->EE->TMPL->fetch_param('allow_breaks');
 		$allow_styles = ( ! $this->EE->TMPL->fetch_param('allow_styles')) ? 'no' :  $this->EE->TMPL->fetch_param('allow_styles');
+		$allow_attributes = ( ! $this->EE->TMPL->fetch_param('allow_attributes')) ? 'no' :  trim($this->EE->TMPL->fetch_param('allow_attributes'));
 		$convert_tags = ( ! $this->EE->TMPL->fetch_param('convert_tags')) ? 'yes' :  $this->EE->TMPL->fetch_param('convert_tags');
 		$paragraphs = ( ! $this->EE->TMPL->fetch_param('paragraphs')) ? '-1' :  $this->EE->TMPL->fetch_param('paragraphs');
 
 		$str = ($str == '') ? $this->EE->TMPL->tagdata : $str;
 
-		// MICROSOFT WORD CLEANUP
+		// CHARACTER-LEVEL CLEANUP
 		// remove non-printing / control characters
 		$str = preg_replace('/[\x00-\x09\x0B\x0C\x0E-\x1F\x7F]/','',$str);
-		// fix mistranslated entities
-		$search = array('/&amp;QUOT;/iu', '/&#47;/u');
-		$replace = array('&quot;', '/');
-		$str = preg_replace($search, $replace, $str);
 		// decode all other entities (including &nbsp;)
 		$str = html_entity_decode($str, ENT_QUOTES, 'UTF-8');
-		// decode ellipsis, dash, quote, dot; fix wayward characters
+		// decode ellipsis, dash, quote, dot
 		$str = str_replace(
-				array("\\xe2\\x80\\xa6", "\\xe2\\x80\\x93", "\\xe2\\x80\\x94", 
-				"\\xe2\\x80\\x98", "\\xe2\\x80\\x99", "\\xe2\\x80\\x9c", 
-				"\\xe2\\x80\\x9d", "\\xe2\\x80\\xa2"), 
+				array("\\xe2\\x80\\xa6", "\\xe2\\x80\\x93", "\\xe2\\x80\\x94",
+				"\\xe2\\x80\\x98", "\\xe2\\x80\\x99", "\\xe2\\x80\\x9c",
+				"\\xe2\\x80\\x9d", "\\xe2\\x80\\xa2"),
 				array('...','-','-','\\','\\','"','"','*'), $str );
 		// fix wayward characters
 		// [HOLDING THIS IN RESERVE PENDING FUTURE TESTING]
-		//$str = str_replace( array('ì', 'î', 'í', 'ë'), array('"', '"', "'", "'"), $str );
-		// remove title, head, style, script and form tags (and everything inside them)
-		$str = preg_replace('#<(title|head|style|form|script|object|applet|xml)[^>]*>.*</\1>#imUs','',$str);
-		// remove Word / HTML comments
-		$str = preg_replace('/<!--(.*)-->/Uis','',$str);
-		// remove C-type comments
-		$str = mb_eregi_replace('#/\*.*?\*/#s', '', $str, 'm');
-		// remove layout-breaking, proprietary and meaningless tags
-		// TO DO: GIVE MORE CONTROL OVER THIS?
-		$str = preg_replace('#</?(\!|html|body|head|style|meta|link|iframe|frame|frameset|font|del|ins|o:|v:|w:|x:|p:)[^>]*>#imxsU','',$str);
-		if ($allow_styles != 'yes')
-		{
-			// remove all parameters from paragraphs and elementary tags
-			$str = preg_replace('/<(p|b|i|strong|em|br)\s[^>]*>/imsU', '<$1>', $str);
-			// remove styling from all tags
-			$str = preg_replace('#(<[^>]+\s*)(style|class|lang|size|face|align|font|onmouseover|onclick)=("[^"]+"|\'[^\']+\'|[^\'">]+\w)([^>]*>)#imU', "$1$4", $str);
-			// BLOGGER CLEANUP
-			// remove target and onclick parameters Blogger inserts into links
-			$str = preg_replace('#<a\s+[^>]*(href="[^"]*")[^>]+>#imU', '<a $1>', $str);
-		}
-		// remove proprietary v: o: w: x: p: parameters from all tags
-		$str = preg_replace('#(<[^>]+)(v|o|w|x|p):[^=>]*="[^"]*"([^>]*>)#imU', "$1$3", $str);
-		// fix dash entities
-		$str = str_replace('Ã¢â‚¬â€œ','&mdash;',$str);
-		// remove anchor links
-		$str = preg_replace('#<a name=[^>]*>\s*</a>#imU',' ',$str);
-		// convert presentational tags to their semantic equivalent
-		if ($convert_tags != 'no')
-		{
-			$search = array('#<(/?)i\b[^>]*>#ui', '#<(/?)b\b[^>]*>#ui');
-			$replace = array('<$1em>','<$1strong>');
-			$str = preg_replace($search, $replace, $str);
-		}
-
-		// FIX WEIRD PROBLEMS THAT ACTUALLY HAPPEN
-		// Odd characters can make empty paragraphs look non-empty.
-		// It seems the only way to remove them to target <p>%C2%A0</p>
+		// $str = str_replace( array('ì', 'î', 'í', 'ë'), array('"', '"', "'", "'"), $str );
+		// remove Unicode non-breaking spaces inside paragraphs
 		$str = urlencode($str);
-		$str = str_replace ("%3Cp%3E%C2%A0%3C%2Fp%3E","",$str);
-		// TinyMCE can introduce these too
+		$str = str_replace ("%3Cp%3E%C2%A0%3C%2Fp%3E",'',$str);
+		// TinyMCE can introduce these (to maintain empty paragraphs?)
 		$str = str_replace ("%C2%A0"," ",$str);
 		$str = urldecode($str);
-
-		// EE RTE CLEANUP
 		// Remove phantom &#8203; garbage that may be created by EE's rte
 		$str = str_replace('​', '', $str); // NOTE: this is not an empty string!
 
-// IN-BROWSER ENTRY FIELD CLEANUP
-// entry fields (with styleWithCSS turned on) can generate CSS styles;
-// insert semantic tags so important styling is not lost
-$str = preg_replace('#(<span [^>]*style=)(\'|")([^\'">]*font-weight:\s*bold[^>]*>)(.*)</span>#imsx','$1$2$3<strong>$4</strong></span>',$str);
-$str = preg_replace('#(<span [^>]*style=)(\'|")([^\'">]*font-style:\s*italic[^>]*>)(.*)</span>#imsx','$1$2$3<em>$4</em></span>',$str);
-
-		// wrap text in <p>, in case it's an unformatted (tag-free) text block
-		// (we will clean this up below)
-		$str = "<p>$str</p>";
-
-		// prevent the loss of arithmetic expressions ( 2<3 ) before stripping tags
-		$str = preg_replace('/<([0-9]+)/', ' < $1', $str);
+		// MICROSOFT WORD CLEANUP
+		// remove Word / HTML comments
+		$str = preg_replace('/<!--(.*)-->/Uis','',$str);
+		// remove C-type comments
+		$str = preg_replace('#/\*.*?\*/#sm', '', $str);
+		// remove title, head, style, script and form tags (and everything inside them)
+		$str = preg_replace('#<(title|head|style|form|script|object|applet|xml)[^>]*>.*</\1>#imUs','',$str);
+		// fix dash entities
+		$str = str_replace('Ã¢â‚¬â€œ','&mdash;',$str);
+		// remove out-of-scope, layout-breaking, proprietary and meaningless tags
+		// TO DO: GIVE MORE CONTROL OVER THIS?
+		$str = preg_replace('#</?(\!|html|body|head|style|meta|link|iframe|frame|frameset|font|del|ins|o:|v:|w:|x:|p:)[^>]*>#imsU','',$str);
+		// remove proprietary v: o: w: x: p: parameters from all tags
+		$str = preg_replace('#(<[^>]+)\s*(?:v|o|w|x|p):\w*="[^"]*"([^>]*>)#imU', "$1$2", $str);
+		// remove anchor links
+		$str = preg_replace('#<a \s*name=[^>]*>\s*</a>#imU',' ',$str);
 
 		// STRIP TAGS
 		if ($allow_tags == 'safe')
@@ -128,7 +92,61 @@ $str = preg_replace('#(<span [^>]*style=)(\'|")([^\'">]*font-style:\s*italic[^>]
 		else
 			$str = strip_tags($str);
 
-		// BR's
+		// REMOVE STYLES
+		if ($allow_styles != 'yes')
+		{
+			// remove all attributes from paragraphs and elementary tags
+			$str = preg_replace('/<(p|b|i|strong|em|br|h[1-6])\s[^>]*>/imsU', '<$1>', $str);
+
+			// remove style attributes from all other tags
+			// [THIS WAS MADE REDUNDANT BY ATTRIBUTES FILTERING BELOW]
+//			$str = preg_replace('#(<\w+\s\s*)(?:style|class|lang|size|face|align|font)=(?:"[^"]*"|\'[^\']*\'|\w+\b)([^>]*>)#imU', "$1$2", $str);
+		}
+		
+		// REMOVE ATTRIBUTES
+		if ($allow_attributes != 'yes')
+		{
+			// BLOGGER CLEANUP
+			// remove target, onclick parameters Blogger inserts into links
+			// [THIS WAS MADE REDUNDANT BY ATTRIBUTES FILTERING BELOW]
+//			$str = preg_replace('#<a\s+[^>]*(href="[^"]*")[^>]+>#imU', '<a $1>', $str);
+
+			if (empty($allow_attributes) || ($allow_attributes == 'no'))
+			{
+				$allow_attributes = 'alt|href|src|title';
+			}
+			// could not find a one-pass pattern to eliminate all disallowed attributes;
+			// instead, we repeat a pattern until no disallowed attributes are found
+			// TO DO: BETTER SOLUTION?
+			$count = substr_count($allow_attributes,'|'); $matches = 1;
+			while ($count-- && ($matches > 0))
+			{
+				$str = preg_replace("#(<\w+\b[^>]*)(?:\b\w*(?<!$allow_attributes)=(?:\"[^\"]*\"|'[^']*')\s*)+([^>]*/?>)#imU", "$1$2", $str, -1, $matches);
+			}
+		}
+
+		// SEMANTIC UPGRADE
+		// convert presentational tags to their semantic equivalent
+		if ($convert_tags != 'no')
+		{
+			$search = array('#<(/?)i\b[^>]*>#ui', '#<(/?)b\b[^>]*>#ui');
+			$replace = array('<$1em>','<$1strong>');
+			$str = preg_replace($search, $replace, $str);
+// IN-BROWSER ENTRY FIELD CLEANUP
+// entry fields (with styleWithCSS turned on) can generate CSS styles;
+// insert semantic tags so important styling is not lost
+$str = preg_replace('#(<span [^>]*style=)(\'|")([^\'">]*font-weight:\s*bold[^>]*>)(.*)</span>#ims','$1$2$3<strong>$4</strong></span>',$str);
+$str = preg_replace('#(<span [^>]*style=)(\'|")([^\'">]*font-style:\s*italic[^>]*>)(.*)</span>#ims','$1$2$3<em>$4</em></span>',$str);
+		}
+
+		// wrap text in <p>, in case it's an unformatted (tag-free) text block
+		// (we will clean this up below)
+		$str = "<p>$str</p>";
+
+		// prevent the loss of arithmetic expressions ( 2<3 ) before stripping tags
+		$str = preg_replace('/<([0-9]+)/', ' < $1', $str);
+
+		// FILTER BR's
 		// normalize BR's
 		$str = str_replace("<br>", "<br />", $str);
 		// remove BR's in headers
@@ -165,7 +183,7 @@ $str = preg_replace('#(<span [^>]*style=)(\'|")([^\'">]*font-style:\s*italic[^>]
 		$str = preg_replace('#(<p>\s*)+#im', '<p>', $str);
 		// change double closing P's to single closing P's
 		$str = preg_replace('#(</p>\s*)+#im', '</p>', $str);
-		// remove empty paragraphs (and other empty tag pairs)
+		// remove empty paragraphs (and other empty tag pairs, including nested ones)
 		$str = preg_replace('#<([^</>]*)>([\s]*?|(?R))</\1>#imsU', '', $str);
 
 		// remove orphaned tags at beginning of text (i.e. </p> at beginning)
@@ -179,6 +197,7 @@ $str = preg_replace('#(<span [^>]*style=)(\'|")([^\'">]*font-style:\s*italic[^>]
 		// insert tab before some tags
 		$str = preg_replace('#(<(li)>)#i', "\t$1",$str);
 
+		// LIMIT PARAGRAPHS
 		if ($paragraphs > 0)
 		{
 			$chunks = explode('<p>', $str);
@@ -219,10 +238,12 @@ Some of what is removed by default:
 * Word document garbage (including comments, proprietary styles, irrelevant formatting tags, etc.)
 * Empty tag pairs (including empty paragraphs)
 * Unnecessary or layout-breaking tags (html, iframe, head, style, center, form, object, etc.)
+* Unnecessary parameters within tags (unless otherwise specified)
 * Classes and styles within tags (unless otherwise specified)
 * Non-printing and control characters
 * Carriage returns and linefeeds
 * Extra whitespace
+* Anchor links
 * Empty lines
 * JavaScript
 * XML
@@ -237,6 +258,8 @@ PARAMETERS:
 allow_breaks - Allow <br> tags to remain ("yes"), or consolidate them into paragraphs ("no"). Optional; default is "no".
 
 allow_styles - Allow class and style parameters to remain ("yes"). Optional; default is "no".
+
+allow_parameters - Allow tag parameters to remain ("yes"), strip all but the most necessary ("no", which is the equivalent of "alt|href|src|title"), or strip all parameters except the ones you list. Optional; default is "no". 
 
 allow_tags - Strip all HTML tags from the text ("no"), strip most tags but keep the most useful and safe ("safe", which is the equivalent of "<a><i><em><strong><cite><code><ul><ol><li><dl><dt><dd><img><h1><h2><h3><h4><h5><h6><br><p><b><blockquote>"), or strip all tags except the ones you list. Optional; default is "safe".
 

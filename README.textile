@@ -19,10 +19,12 @@ Some of what is removed by default:
 * Word document garbage (including comments, proprietary styles, irrelevant formatting tags, etc.)
 * Empty tag pairs (including empty paragraphs)
 * Unnecessary or layout-breaking tags (html, iframe, head, style, center, form, object, etc.)
+* Unnecessary parameters within tags (unless otherwise specified)
 * Classes and styles within tags (unless otherwise specified)
 * Non-printing and control characters
 * Carriage returns and linefeeds
 * Extra whitespace
+* Anchor links
 * Empty lines
 * JavaScript
 * XML
@@ -41,6 +43,7 @@ _All parameters are optional:_
 
 |_. Parameter |_. Description |_. Default |
 | *allow_breaks* | Allow @<br>@ tags to remain ("yes"), or consolidate them into paragraphs ("no"). | "no" |
+| *allow_parameters* | Allow tag parameters to remain ("yes"), strip all but the most necessary ("no", which is the equivalent of "alt|href|src|title"), or strip all parameters except the ones you list. | "no" |
 | *allow_styles* | Allow class and style parameters to remain ("yes"). | "no" |
 | *allow_tags* | Strip all HTML tags from the text ("no"), strip most tags but keep the most useful and safe ("safe", which is the equivalent of "&lt;a&gt;&lt;i&gt;&lt;em&gt;&lt;strong&gt;&lt;cite&gt;&lt;code&gt;&lt;ul&gt;&lt;ol&gt;&lt;li&gt;&lt;dl&gt;&lt;dt&gt;&lt;dd&gt;&lt;img&gt;&lt;h1&gt;&lt;h2&gt;&lt;h3&gt;&lt;h4&gt;&lt;h5&gt;&lt;h6&gt;&lt;br&gt;&lt;p&gt;&lt;b&gt;&lt;blockquote&gt;"), or strip all tags except the ones you list. | "safe" |
 | *convert_tags* | Convert presentational tags @<i>@ and @<b>@ to the semantic @<em>@ and @<strong>@ ("yes"), or leave them as-is ("no"). | "yes" |
@@ -76,6 +79,8 @@ h2. Bug Tracker
 Have a bug? Please create an issue on GitHub at https://github.com/fcgrx/ex_sponge/issues
 
 h2. Changelog
+
+* v0.8.6 - Added *allow_parameters* argument, which allows control over how tag parameters are filtered. Slight rearrangement of filter order. Removed redundant filters and made minor refinements to others.
 
 * v0.8.5 - Changed the *allow_tags* argument to default to new "safe" value, which includes only critical tags. Expanded the MS Word filters. Rearranged filter order for better interaction. Removed redundant filters. Fixed an issue with lost spaces. Made some searches case-insensitive. Made text a little prettier.
 
