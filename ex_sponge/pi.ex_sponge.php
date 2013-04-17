@@ -6,7 +6,7 @@ Copyright (C) 2013 FCGRX.
 
 $plugin_info = array(
 						'pi_name'			=> 'ExSponge',
-						'pi_version'		=> '0.8.8',
+						'pi_version'		=> '0.8.9',
 						'pi_author'			=> 'Dan Prothero',
 						'pi_author_url'		=> 'http://fcgrx.com/',
 						'pi_description'	=> 'Cleans up the garbage that text editors and word processors leave behind',
@@ -44,6 +44,14 @@ class Ex_sponge {
 
 		$str = ($str == '') ? $this->EE->TMPL->tagdata : $str;
 
+		// MICROSOFT WORD CLEANUP 1
+		// remove Word / HTML comments
+		$str = preg_replace('/<!--(.*)-->/Uis','',$str);
+		// remove C-type comments
+		$str = preg_replace('#/\*.*?\*/#sm', '', $str);
+		// remove title, head, style, script and form tags (and everything inside them)
+		$str = preg_replace('#<(title|head|style|form|script|object|applet|xml)[^>]*>.*</\1>#imUs','',$str);
+
 		// CHARACTER-LEVEL CLEANUP
 		// remove non-printing / control characters
 		$str = preg_replace('/[\x00-\x09\x0B\x0C\x0E-\x1F\x7F]/','',$str);
@@ -67,13 +75,7 @@ class Ex_sponge {
 		// Remove phantom &#8203; garbage that may be created by EE's rte
 		$str = str_replace('​', '', $str); // NOTE: this is not an empty string!
 
-		// MICROSOFT WORD CLEANUP
-		// remove Word / HTML comments
-		$str = preg_replace('/<!--(.*)-->/Uis','',$str);
-		// remove C-type comments
-		$str = preg_replace('#/\*.*?\*/#sm', '', $str);
-		// remove title, head, style, script and form tags (and everything inside them)
-		$str = preg_replace('#<(title|head|style|form|script|object|applet|xml)[^>]*>.*</\1>#imUs','',$str);
+		// MICROSOFT WORD CLEANUP 2
 		// fix dash entities
 		$str = str_replace('Ã¢â‚¬â€œ','&mdash;',$str);
 		// remove out-of-scope, layout-breaking, proprietary and meaningless tags
@@ -83,14 +85,6 @@ class Ex_sponge {
 		$str = preg_replace('#(<[^>]+)\s*(?:v|o|w|x|p):\w*="[^"]*"([^>]*>)#imU', "$1$2", $str);
 		// remove anchor links
 		$str = preg_replace('#<a \s*name=[^>]*>\s*</a>#imU',' ',$str);
-
-		// STRIP TAGS
-		if ($allow_tags == 'safe')
-			$str = strip_tags($str, "<p><br><br /><b><a><i><em><strong><ul><ol><li><img><h1><h2><h3><h4><h5><h6><blockquote><dl><dt><dd><cite><code>");
-		elseif ($allow_tags != strip_tags($allow_tags))
-			$str = strip_tags($str,$allow_tags);
-		else
-			$str = strip_tags($str);
 
 		// REMOVE STYLES
 		if ($allow_styles != 'yes')
@@ -103,6 +97,28 @@ class Ex_sponge {
 //			$str = preg_replace('#(<\w+\s\s*)(?:style|class|lang|size|face|align|font)=(?:"[^"]*"|\'[^\']*\'|\w+\b)([^>]*>)#imU', "$1$2", $str);
 		}
 		
+		// SEMANTIC UPGRADE
+		// convert presentational tags to their semantic equivalent
+		if ($convert_tags != 'no')
+		{
+			$search = array('#<(/?)i\b[^>]*>#ui', '#<(/?)b\b[^>]*>#ui');
+			$replace = array('<$1em>','<$1strong>');
+			$str = preg_replace($search, $replace, $str);
+			// IN-BROWSER ENTRY FIELD CLEANUP
+			// entry fields (with styleWithCSS turned on) can generate CSS styles;
+			// insert semantic tags so important styling is not lost when we delete span tags
+			$str = preg_replace('#(<span [^>]*style=[^>]*font-weight:\s*bold[^><]*>)(.*)(</span>)#imsU','$1<strong>$2</strong>$3',$str);
+			$str = preg_replace('#(<span [^>]*style=[^>]*font-style:\s*italic[^><]*>)(.*)(</span>)#imsU','$1<em>$2</em>$3',$str);
+		}
+
+		// STRIP TAGS
+		if ($allow_tags == 'safe')
+			$str = strip_tags($str, "<p><br><br /><b><a><i><em><strong><ul><ol><li><img><h1><h2><h3><h4><h5><h6><blockquote><dl><dt><dd><cite><code>");
+		elseif ($allow_tags != strip_tags($allow_tags))
+			$str = strip_tags($str,$allow_tags);
+		else
+			$str = strip_tags($str);
+
 		// REMOVE ATTRIBUTES
 		if ($allow_attributes != 'yes')
 		{
@@ -125,20 +141,6 @@ class Ex_sponge {
 			}
 		}
 
-		// SEMANTIC UPGRADE
-		// convert presentational tags to their semantic equivalent
-		if ($convert_tags != 'no')
-		{
-			$search = array('#<(/?)i\b[^>]*>#ui', '#<(/?)b\b[^>]*>#ui');
-			$replace = array('<$1em>','<$1strong>');
-			$str = preg_replace($search, $replace, $str);
-// IN-BROWSER ENTRY FIELD CLEANUP
-// entry fields (with styleWithCSS turned on) can generate CSS styles;
-// insert semantic tags so important styling is not lost
-$str = preg_replace('#(<span [^>]*style=)(\'|")([^\'">]*font-weight:\s*bold[^>]*>)(.*)</span>#ims','$1$2$3<strong>$4</strong></span>',$str);
-$str = preg_replace('#(<span [^>]*style=)(\'|")([^\'">]*font-style:\s*italic[^>]*>)(.*)</span>#ims','$1$2$3<em>$4</em></span>',$str);
-		}
-
 		// wrap text in <p>, in case it's an unformatted (tag-free) text block
 		// (we will clean this up below)
 		$str = "<p>$str</p>";
@@ -149,14 +151,16 @@ $str = preg_replace('#(<span [^>]*style=)(\'|")([^\'">]*font-style:\s*italic[^>]
 		// FILTER BR's
 		// normalize BR's
 		$str = str_replace("<br>", "<br />", $str);
-		// remove BR's in headers
-		$str = preg_replace('#(<br />)\s*(</(h[1-6])>)#im', '$2',$str);
-		 // remove BR's from lists
-		$str = preg_replace('#(<br />)\s*(</(li)>)#im', '$2',$str);
-		// optionally change all (remaining) BR's to paragraphs
+		// remove BR's at end of headers and list items
+		$str = preg_replace('#(?:<br />\s*)+(</(h[1-6]|li)>)#im', '$1',$str);
+		// optionally convert BR's to paragraphs
 		if ($allow_breaks == 'no')
 		{
 			$str = preg_replace('#(<br />\s*)+#mi', '</p><p>',$str);
+		}
+		elseif ($allow_breaks == 'single')
+		{
+			$str = preg_replace('#(<br />\s*){2,}#mi', '</p><p>',$str);
 		}
 
 		// WHITESPACE
@@ -231,7 +235,7 @@ It will also optionally remove all tags, or keep only the tags you want. And you
 
 This plugin is for developers who want neatly formatted paragraphs with minimal styling, and who do not want the proprietary tags and unnecessary parameters inserted by word processors (or the "tag soup" unwittingly generated by clients) compromising their layout.
 
-Although undoubtedly less thorough than HTML TIDY or HTML Purifier, it is also more efficient, easier to set up, and focused on the specific problems you will likely encounter if you give your clients a WYSIWG field with which to edit their channel entries. In my worst-case scenario (a Microsoft Word document exported to HTML and pasted into an EE Rich Text field), ExSponge reduced the data size by 97% without any loss in content.
+Although undoubtedly less comprehensive than HTML TIDY or HTML Purifier, it is also more efficient, easier to set up, and focused on the specific problems you will likely encounter if you give your clients a WYSIWG field with which to edit their channel entries. In my worst-case scenario (a Microsoft Word document exported to HTML and pasted into an EE Rich Text field), ExSponge reduced the data size by 97% without any loss in content.
 
 Some of what is removed by default:
 
@@ -241,7 +245,7 @@ Some of what is removed by default:
 * Unnecessary parameters within tags (unless otherwise specified)
 * Classes and styles within tags (unless otherwise specified)
 * Non-printing and control characters
-* Carriage returns and linefeeds
+* Newlines (\n) and linefeeds (\r)
 * Extra whitespace
 * Anchor links
 * Empty lines
@@ -255,7 +259,7 @@ The final output will be compact, tidy, and ready to use in your layout.
 
 PARAMETERS:
 
-allow_breaks - Allow <br> tags to remain ("yes"), or consolidate them into paragraphs ("no"). Optional; default is "no".
+allow_breaks - Allow <br> tags to remain as-is ("yes"), or convert double-breaks ("<br><br>") to paragraphs while leaving single breaks alone ("single"), or consolidate all breaks into paragraphs ("no"). Optional; default is "no".
 
 allow_styles - Allow class and style parameters to remain ("yes"). Optional; default is "no".
 
@@ -278,7 +282,7 @@ To use this plugin, simply wrap the text you want processed between these tag pa
 
 {/exp:ex_sponge}
 
-I typically use the above tag (with no parameters) in every template that contains the output of a Rich Text or WYSIWYG field the client is allowed to edit.
+In my templates, I typically wrap the above tag (with no parameters) around the output of any Rich Text or WYSIWYG field the client is allowed to edit.
 
 A more complex example:
 
