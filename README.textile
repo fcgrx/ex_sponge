@@ -80,6 +80,8 @@ Have a bug? Please create an issue on GitHub at https://github.com/fcgrx/ex_spon
 
 h2. Changelog
 
+* v0.8.7 - Added height and width to attribute whitelist
+
 * v0.8.7 - Refined *allow_parameters*
 
 * v0.8.6 - Added *allow_parameters* argument, which allows control over how tag parameters are filtered. Slight rearrangement of filter order. Removed redundant filters and made minor refinements to others.

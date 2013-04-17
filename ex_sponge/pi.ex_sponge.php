@@ -6,7 +6,7 @@ Copyright (C) 2013 FCGRX.
 
 $plugin_info = array(
 						'pi_name'			=> 'ExSponge',
-						'pi_version'		=> '0.8.6',
+						'pi_version'		=> '0.8.8',
 						'pi_author'			=> 'Dan Prothero',
 						'pi_author_url'		=> 'http://fcgrx.com/',
 						'pi_description'	=> 'Cleans up the garbage that text editors and word processors leave behind',
@@ -78,7 +78,7 @@ class Ex_sponge {
 		$str = str_replace('Ã¢â‚¬â€œ','&mdash;',$str);
 		// remove out-of-scope, layout-breaking, proprietary and meaningless tags
 		// TO DO: GIVE MORE CONTROL OVER THIS?
-		$str = preg_replace('#</?(\!|html|body|head|style|meta|link|iframe|frame|frameset|font|del|ins|o:|v:|w:|x:|p:)[^>]*>#imsU','',$str);
+		$str = preg_replace('#</?(\!|html|body|header|footer|section|article|meta|link|iframe|frame|frameset|font|del|ins|o:|v:|w:|x:|p:)[^>]*>#imsU','',$str);
 		// remove proprietary v: o: w: x: p: parameters from all tags
 		$str = preg_replace('#(<[^>]+)\s*(?:v|o|w|x|p):\w*="[^"]*"([^>]*>)#imU', "$1$2", $str);
 		// remove anchor links
@@ -113,7 +113,7 @@ class Ex_sponge {
 
 			if (empty($allow_attributes) || ($allow_attributes == 'no'))
 			{
-				$allow_attributes = 'alt|href|src|title';
+				$allow_attributes = 'href|src|height|width|alt|title';
 			}
 			// could not find a one-pass pattern to eliminate all disallowed attributes;
 			// instead, we repeat a pattern until no disallowed attributes are found
