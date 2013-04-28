@@ -1,8 +1,8 @@
-# ExSponge
+h1. ExSponge
 
 An HTML filtering and WYSIWYG / Microsoft Word / Rich Text editor cleanup plugin for "ExpressionEngine":http://www.expressionengine.com v2
 
-## Info
+h2. Info
 
 This plugin cleans up the mess your clients leave behind!
 
@@ -35,11 +35,11 @@ In addition, special HTML entities (@&amp;quot;@ for example) are converted to t
 
 The final output will be compact, tidy, and ready to use in your layout.
 
-## Installation
+h2. Installation
 
 Place the `ex_sponge` folder in your `system/expressionengine/third_party` folder.
 
-## Parameters
+h2. Parameters
 
 
 PARAMETERS:
@@ -55,7 +55,7 @@ PARAMETERS:
 
 *NOTE: allow_styles parameter removed as of v0.9; it is redundant since the addition of the more flexible allow_attributes parameter*
 
-## Usage
+h2. Usage
 
 To use this plugin, simply wrap the text you want processed between these tag pairs:
 
@@ -73,22 +73,22 @@ A more complex example, which reduces the markup down to the basics, keeps only 
 
 {/exp:ex_sponge}
 
-## License
+h2. License
 
 Licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License
 http://creativecommons.org/licenses/by-sa/3.0/us/
 
-## Contact
+h2. Contact
 
 * Email: "info@fcgrx.com":mailto:info@fcgrx.com
 
-## Support / Feature Requests
+h2. Support / Feature Requests
 
 This project is an active part of all my ExpressionEngine installations, and I'd like to keep it as fast, full-featured and bulletproof as possible. 
 
 Have a bug? Feature request? Please create an issue on GitHub at https://github.com/fcgrx/ex_sponge/issues
 
-## Changelog
+h2. Changelog
 
 * v0.9.0 - Added "minimal" option to *allow_tags* parameter. Further refinements to the allow_parameters parameter. Many optimizations to filters. Additional filtering for malformed HTML. Support for tables. Removed *allow_styles* parameter (made redundant by *allow_parameters*).
 
