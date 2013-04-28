@@ -59,18 +59,17 @@ h2. Usage
 
 To use this plugin, simply wrap the text you want processed between these tag pairs:
 
-    {exp:ex_sponge}
-        ( your mess goes here )
-    {/exp:ex_sponge}
+bc..{exp:ex_sponge}
+    ( your mess goes here )
+{/exp:ex_sponge}
 
 In my templates, I typically wrap the above tag (with no parameters) around the output of any Rich Text or WYSIWYG field the client is allowed to edit.
 
 A more complex example, which reduces the markup down to the basics, keeps only the first four paragraphs, and takes advantage of EE's built-in tag caching:
 
-{exp:ex_sponge allow_tags="&lt;p&gt;&lt;strong&gt;&lt;em&gt;&lt;ul&gt;&lt;li&gt;" allow_attributes="href|src|alt|title" paragraphs="4" cache="yes" refresh="1440"}
-
-	*** your mess goes here ***
-
+bc..{exp:ex_sponge allow_tags="&lt;p&gt;&lt;strong&gt;&lt;em&gt;&lt;ul&gt;&lt;li&gt;" 
+ allow_attributes="href|src|alt|title" paragraphs="4" cache="yes" refresh="1440"}
+    ( your mess goes here )
 {/exp:ex_sponge}
 
 h2. License
