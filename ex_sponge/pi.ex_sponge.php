@@ -52,7 +52,7 @@ class Ex_sponge {
 		else
 		{
 			$allowed_block_tags = trim(str_replace('><','|', $allow_tags),'<>');
-			$disallowed_block_tags = trim(preg_replace('#((^|\|)('.$allowed_block_tags.')\b)#mi', '', $disallowed_block_tags),'|';
+			$disallowed_block_tags = trim(preg_replace('#((^|\|)('.$allowed_block_tags.')\b)#mi', '', $disallowed_block_tags),'|');
 		}
 
 		$str = ($str == '') ? $this->EE->TMPL->tagdata : $str;
