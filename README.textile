@@ -55,15 +55,12 @@ Place the `ex_sponge` folder in your `system/expressionengine/third_party` folde
 
 h2. Parameters
 
-
-PARAMETERS:
-
 *All parameters are optional:*
 
 |_. Parameter |_. Description |_. Default |
-| *allow_tags* | Remove all HTML tags from the markup and leave only raw, unformatted text ("no"), strip most tags but keep the most useful and safe ("safe", which is the equivalent of "&lt;a&gt;&lt;i&gt;&lt;em&gt;&lt;strong&gt;&lt;cite&gt;&lt;code&gt;&lt;ul&gt;&lt;ol&gt;&lt;li&gt;&lt;dl&gt;&lt;dt&gt;&lt;dd&gt;&lt;img&gt;&lt;h1&gt;&lt;h2&gt;&lt;h3&gt;&lt;h4&gt;&lt;h5&gt;&lt;h6&gt;&lt;br&gt;&lt;p&gt;&lt;b&gt;&lt;blockquote&gt;"), strip most tags but the minimum ("minimal", which is the equivalent of "&lt;p&gt;&lt;br&gt;&lt;b&gt;&lt;a&gt;&lt;i&gt;&lt;em&gt;&lt;strong&gt;&lt;ul&gt;&lt;ol&gt;&lt;li&gt;&lt;img&gt;&lt;h1&gt;&lt;h2&gt;&lt;h3&gt;&lt;h4&gt;&lt;h5&gt;&lt;h6&gt;&lt;blockquote&gt;"), or strip all tags except the ones you list. Tip: if you set this parameter to "&lt;p&gt;", text will be reduced to paragraphs only. Note that out-of-scope tags (html, head, link, header, footer etc) will be removed regardless. | "safe" |
+| *allow_tags* | Remove all HTML tags from the markup and leave only raw, unformatted text ("no"), strip most tags but keep the most useful and safe ("safe", which is the equivalent of "&lt;p&gt;&lt;br&gt;&lt;b&gt;&lt;a&gt;&lt;i&gt;&lt;em&gt;&lt;strong&gt;&lt;del&gt;&lt;ins&gt;&lt;u&gt;&lt;ul&gt;&lt;ol&gt;&lt;li&gt;&lt;img&gt;&lt;h1&gt;&lt;h2&gt;&lt;h3&gt;&lt;h4&gt;&lt;h5&gt;&lt;h6&gt;&lt;blockquote&gt;&lt;q&gt;&lt;sup&gt;&lt;sub&gt;&lt;dl&gt;&lt;dt&gt;&lt;dd&gt;&lt;cite&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;th&gt;&lt;thead&gt;&lt;tbody&gt;&lt;tfoot&gt;"), strip most tags but the minimum ("minimal", which is the equivalent of "&lt;p&gt;&lt;br&gt;&lt;b&gt;&lt;a&gt;&lt;i&gt;&lt;em&gt;&lt;strong&gt;&lt;del&gt;&lt;ins&gt;&lt;u&gt;&lt;ul&gt;&lt;ol&gt;&lt;li&gt;&lt;img&gt;&lt;h1&gt;&lt;h2&gt;&lt;h3&gt;&lt;h4&gt;&lt;h5&gt;&lt;h6&gt;&lt;blockquote&gt;&lt;q&gt;&lt;sup&gt;&lt;sub&gt;"), or strip all tags except the ones you list. Tip: if you set this parameter to "&lt;p&gt;", text will be reduced to paragraphs only. Note that out-of-scope tags (html, head, link, header, footer etc) will be removed regardless. | "safe" |
 | *allow_breaks* | Allow @<br>@  tags to remain as-is ("yes"), or only convert double-breaks (@<br><br>@) to paragraphs while leaving single breaks alone ("single"), or consolidate all breaks into paragraphs ("no"). | "no" |
-| *allow_parameters* | Allow tag parameters to remain ("yes"), strip all but the most necessary ("no", which is the equivalent of "href&#124;src&#124;height&#124;width&#124;alt&#124;title&#124;cite", or strip all parameters except the ones you list. | "no" |
+| *allow_parameters* | Allow tag parameters to remain ("yes"), strip all but the most necessary ("no", which is the equivalent of "href&#124;src&#124;height&#124;width&#124;alt&#124;title&#124;name&#124;cite&#124;colspan", or strip all parameters except the ones you list. | "no" |
 | *convert_tags* | Convert presentational tags @<i>@ and @<b>@ and @<s>@ and @<strike>@ to the semantic @<em>@ and @<strong>@ and @<del>@ and @<ins>@ ("yes"), or leave them as-is ("no"). | "yes" |
 | *paragraphs* | Clip the text after a specified number of paragraphs. Any positive number ("1", "4", "9999") will cause the text to be trimmed. "-1" will not clip the text at all. | "-1" |
 
