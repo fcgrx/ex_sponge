@@ -48,6 +48,11 @@ In addition, ExSponge will:
 
 The final output will be compact, tidy, and ready to use in your layout.
 
+h2. Demo
+
+A live demonstration of ExSponge is available here:
+
+http://fcgrx.com/sponge
 
 h2. Installation
 
